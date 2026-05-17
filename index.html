@@ -1,0 +1,211 @@
+<!-- Save as index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task Management App</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, sans-serif;
+    }
+
+    body{
+      background:#f4f6f9;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .container{
+      width:100%;
+      max-width:500px;
+      background:white;
+      padding:25px;
+      border-radius:12px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:20px;
+      color:#333;
+    }
+
+    .task-input{
+      display:flex;
+      gap:10px;
+      margin-bottom:20px;
+    }
+
+    .task-input input{
+      flex:1;
+      padding:12px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:16px;
+    }
+
+    .task-input button{
+      padding:12px 18px;
+      background:#2563eb;
+      color:white;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:16px;
+    }
+
+    .task-input button:hover{
+      background:#1e4fd1;
+    }
+
+    ul{
+      list-style:none;
+    }
+
+    li{
+      background:#f1f5f9;
+      padding:12px;
+      margin-bottom:10px;
+      border-radius:8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    li.completed span{
+      text-decoration:line-through;
+      color:gray;
+    }
+
+    .buttons{
+      display:flex;
+      gap:8px;
+    }
+
+    .complete-btn{
+      background:green;
+      color:white;
+      border:none;
+      padding:6px 10px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    .delete-btn{
+      background:red;
+      color:white;
+      border:none;
+      padding:6px 10px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    @media(max-width:500px){
+      .task-input{
+        flex-direction:column;
+      }
+
+      .task-input button{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Task Management App</h1>
+
+    <div class="task-input">
+      <input type="text" id="taskInput" placeholder="Enter a task">
+      <button onclick="addTask()">Add Task</button>
+    </div>
+
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function saveTasks(){
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function displayTasks(){
+      const taskList = document.getElementById("taskList");
+      taskList.innerHTML = "";
+
+      tasks.forEach((task, index) => {
+
+        const li = document.createElement("li");
+
+        if(task.completed){
+          li.classList.add("completed");
+        }
+
+        li.innerHTML = `
+          <span>${task.text}</span>
+
+          <div class="buttons">
+            <button class="complete-btn" onclick="toggleTask(${index})">
+              ${task.completed ? "Undo" : "Done"}
+            </button>
+
+            <button class="delete-btn" onclick="deleteTask(${index})">
+              Delete
+            </button>
+          </div>
+        `;
+
+        taskList.appendChild(li);
+      });
+    }
+
+    function addTask(){
+      const input = document.getElementById("taskInput");
+      const text = input.value.trim();
+
+      if(text === ""){
+        alert("Please enter a task");
+        return;
+      }
+
+      tasks.push({
+        text:text,
+        completed:false
+      });
+
+      saveTasks();
+      displayTasks();
+
+      input.value = "";
+    }
+
+    function toggleTask(index){
+      tasks[index].completed = !tasks[index].completed;
+
+      saveTasks();
+      displayTasks();
+    }
+
+    function deleteTask(index){
+      tasks.splice(index,1);
+
+      saveTasks();
+      displayTasks();
+    }
+
+    displayTasks();
+  </script>
+
+</body>
+</html>
